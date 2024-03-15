@@ -72,22 +72,22 @@ jobs:
       - name: Generate testing id
         run: echo TESTING_ID="${{ inputs.aws-region }}-${{ github.run_id }}-${{ github.run_number }}" >> $GITHUB_ENV
 
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
+      #     aws-region: us-east-1
+
+      # - name: Retrieve account
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids:
+      #       ACCOUNT_ID, region-account/${{ inputs.aws-region }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
-          aws-region: us-east-1
-
-      - name: Retrieve account
-        uses: aws-actions/aws-secretsmanager-get-secrets@v1
-        with:
-          secret-ids:
-            ACCOUNT_ID, region-account/${{ inputs.aws-region }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN_JAVA_EKS }}
           aws-region: ${{ inputs.aws-region }}
 
       # local directory to store the kubernetes config
@@ -158,8 +158,8 @@ jobs:
               -var="eks_cluster_context_name=$(kubectl config current-context)" \
               -var="test_namespace=${{ env.SAMPLE_APP_NAMESPACE }}" \
               -var="service_account_aws_access=service-account-${{ env.TESTING_ID }}" \
-              -var="sample_app_image=${{ env.ACCOUNT_ID }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ secrets.APP_SIGNALS_E2E_FE_SA_IMG }}" \
-              -var="sample_remote_app_image=${{ env.ACCOUNT_ID }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ secrets.APP_SIGNALS_E2E_RE_SA_IMG }}" \
+              -var="sample_app_image=${{ secrets.ACCOUNT_ID }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ secrets.APP_SIGNALS_E2E_FE_SA_IMG }}" \
+              -var="sample_remote_app_image=${{ secrets.ACCOUNT_ID }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ secrets.APP_SIGNALS_E2E_RE_SA_IMG }}" \
             || deployment_failed=$?
                     
             if [ $deployment_failed -ne 0 ]; then
@@ -294,7 +294,7 @@ jobs:
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
@@ -311,7 +311,7 @@ jobs:
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
@@ -329,7 +329,7 @@ jobs:
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
@@ -339,22 +339,22 @@ jobs:
           --request-body ip=${{ env.REMOTE_SERVICE_POD_IP }}
           --rollup'
 
-      - name: Publish metric on test result
-        if: always()
-        run: |
-          if [[ "${{ steps.log-validation.outcome }}" == "success" && "${{ steps.metric-validation.outcome }}" == "success" && "${{ steps.trace-validation.outcome }}" == "success" ]]; then
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 0.0 \
-            --region ${{ inputs.aws-region }}
-          else
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 1.0 \
-            --region ${{ inputs.aws-region }}
-          fi
+      # - name: Publish metric on test result
+      #   if: always()
+      #   run: |
+      #     if [[ "${{ steps.log-validation.outcome }}" == "success" && "${{ steps.metric-validation.outcome }}" == "success" && "${{ steps.trace-validation.outcome }}" == "success" ]]; then
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 0.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     else
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 1.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     fi
 
       # Clean up Procedures
 

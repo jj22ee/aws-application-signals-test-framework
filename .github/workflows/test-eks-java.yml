@@ -1,0 +1,20 @@
+name: test-eks-java
+on:
+  workflow_dispatch: # be able to run the workflow on demand
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  e2e-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        aws-region: ['us-east-1']
+    uses: ./.github/workflows/appsignals-e2e-eks-test.yml
+    secrets: inherit
+    with:
+      aws-region: ${{ matrix.aws-region }}
+      test-cluster-name: 'e2e-canary-test'
+      caller-workflow-name: 'test-eks-java'
