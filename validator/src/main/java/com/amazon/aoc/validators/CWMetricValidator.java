@@ -123,11 +123,7 @@ public class CWMetricValidator implements IValidator {
           dimensionLists.add(
               Arrays.asList(
                   new Pair<>(CloudWatchService.REMOTE_SERVICE_DIMENSION, "AWS.SDK.S3"),
-                  new Pair<>(CloudWatchService.REMOTE_TARGET_DIMENSION, "e2e-test-bucket-name-" + context.getTestingId())));
-          dimensionLists.add(
-              Arrays.asList(
-                  new Pair<>(CloudWatchService.REMOTE_SERVICE_DIMENSION, "AWS.SDK.S3"),
-                  new Pair<>(CloudWatchService.REMOTE_TARGET_DIMENSION, "::s3:::e2e-test-bucket-name-" + context.getTestingId())));
+                  new Pair<>(CloudWatchService.REMOTE_TARGET_DIMENSION, context.getRemoteTargetName())));
 
           // Populate actualMetricList with metrics that pass through one of the dimension filters
           for (List<Pair<String, String>> dimensionList : dimensionLists) {

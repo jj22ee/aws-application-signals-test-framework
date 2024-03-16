@@ -224,7 +224,7 @@ public class CWMetricValidatorTest {
             eq(
                 Arrays.asList(
                     new Pair<String, String>(REMOTE_SERVICE_DIMENSION, "AWS.SDK.S3"),
-                    new Pair<String, String>(REMOTE_TARGET_DIMENSION, "e2e-test-bucket-name")))))
+                    new Pair<String, String>(REMOTE_TARGET_DIMENSION, REMOTE_TARGET_NAME)))))
         .thenReturn(remoteMetricsWithS3Target);
     return cloudWatchService;
   }
