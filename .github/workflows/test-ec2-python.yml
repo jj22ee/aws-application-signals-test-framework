@@ -1,0 +1,19 @@
+name: test-ec2-python
+on:
+  workflow_dispatch: # be able to run the workflow on demand
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  e2e-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        aws-region: ['us-east-1']
+    uses: ./.github/workflows/appsignals-python-e2e-ec2-test.yml
+    secrets: inherit
+    with:
+      aws-region: ${{ matrix.aws-region }}
+      caller-workflow-name: 'test-ec2-python'
