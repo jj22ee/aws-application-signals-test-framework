@@ -1,6 +1,8 @@
 name: test-ec2-python
 on:
-  workflow_dispatch: # be able to run the workflow on demand
+  schedule:
+    - cron: '*/15 * * * *' # run the workflow every 15 minutes
+  # workflow_dispatch: # be able to run the workflow on demand
 
 permissions:
   id-token: write
