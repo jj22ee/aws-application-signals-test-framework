@@ -24,7 +24,7 @@ permissions:
   contents: read
 
 env:
-  SAMPLE_APP_ZIP: s3://${{ secrets.APP_SIGNALS_E2E_EC2_JAR }}-prod-${{ inputs.aws-region }}/python-sample-app.zip
+  SAMPLE_APP_ZIP: s3://sample-app-remote-python/python-sample-app.zip
   METRIC_NAMESPACE: AppSignals
   LOG_GROUP_NAME: /aws/appsignals/generic
   ADOT_WHEEL_NAME: ${{ inputs.staging_wheel_name }}
@@ -46,22 +46,23 @@ jobs:
       - name: Generate testing id
         run: echo TESTING_ID="${{ github.job }}-${{ env.AWS_DEFAULT_REGION }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
+      #     aws-region: us-east-1
+
+      # - name: Retrieve account
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids:
+      #       ACCOUNT_ID, region-account/${{ inputs.aws-region }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
-          aws-region: us-east-1
-
-      - name: Retrieve account
-        uses: aws-actions/aws-secretsmanager-get-secrets@v1
-        with:
-          secret-ids:
-            ACCOUNT_ID, region-account/${{ inputs.aws-region }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN }}
+          # role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
 
       - uses: actions/download-artifact@v3
@@ -220,7 +221,7 @@ jobs:
           --endpoint http://${{ env.MAIN_SERVICE_ENDPOINT }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_IP }}:8001
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --service-name python-sample-application-${{ env.TESTING_ID }}
@@ -229,22 +230,22 @@ jobs:
           --instance-ami ${{ env.EC2_INSTANCE_AMI }}
           --rollup'
 
-      - name: Publish metric on test result
-        if: always()
-        run: |
-          if [ "${{ steps.log-validation.outcome }}" = "success" ] && [ "${{ steps.metric-validation.outcome }}" = "success" ] && [ "${{ steps.trace-validation.outcome }}" = "success" ]; then
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 0.0 \
-            --region ${{ inputs.aws-region }}
-          else
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 1.0 \
-            --region ${{ inputs.aws-region }}
-          fi
+      # - name: Publish metric on test result
+      #   if: always()
+      #   run: |
+      #     if [ "${{ steps.log-validation.outcome }}" = "success" ] && [ "${{ steps.metric-validation.outcome }}" = "success" ] && [ "${{ steps.trace-validation.outcome }}" = "success" ]; then
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 0.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     else
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 1.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     fi
 
       # Clean up Procedures
       - name: Terraform destroy

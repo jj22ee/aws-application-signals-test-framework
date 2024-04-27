@@ -24,8 +24,9 @@ env:
   # It is not redundant
   AWS_DEFAULT_REGION: ${{ inputs.aws-region }}
   TEST_ACCOUNT: ${{ secrets.APP_SIGNALS_E2E_TEST_ACC }}
-  SAMPLE_APP_FRONTEND_SERVICE_JAR: s3://${{ secrets.APP_SIGNALS_E2E_EC2_JAR }}-prod-${{ inputs.aws-region }}/main-service.jar
-  SAMPLE_APP_REMOTE_SERVICE_JAR: s3://${{ secrets.APP_SIGNALS_E2E_EC2_JAR }}-prod-${{ inputs.aws-region }}/remote-service.jar
+  SAMPLE_APP_FRONTEND_SERVICE_JAR: s3://sample-app-remote/sample-app.jar
+  SAMPLE_APP_REMOTE_SERVICE_JAR: s3://sample-app-remote/sample-app-remote.jar
+  APP_SIGNALS_ADOT_JAR: "https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar"
   METRIC_NAMESPACE: AppSignals
   LOG_GROUP_NAME: /aws/appsignals/generic
   GET_ADOT_JAR_COMMAND: "wget -O adot.jar https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v1.32.1/aws-opentelemetry-agent.jar"
@@ -45,22 +46,22 @@ jobs:
       - name: Generate testing id
         run: echo TESTING_ID="${{ github.run_id }}-${{ github.run_number }}" >> $GITHUB_ENV
 
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
+      #     aws-region: us-east-1
+
+      # - name: Retrieve account
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids:
+      #       ACCOUNT_ID, region-account/${{ inputs.aws-region }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.E2E_SECRET_TEST_ROLE_ARN }}
-          aws-region: us-east-1
-
-      - name: Retrieve account
-        uses: aws-actions/aws-secretsmanager-get-secrets@v1
-        with:
-          secret-ids:
-            ACCOUNT_ID, region-account/${{ inputs.aws-region }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{ secrets.E2E_TEST_ROLE_ARN_JAVA_EKS }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Initiate Terraform
@@ -185,7 +186,7 @@ jobs:
           --endpoint http://${{ env.MAIN_SERVICE_ENDPOINT }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_IP }}:8080
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
@@ -202,7 +203,7 @@ jobs:
           --endpoint http://${{ env.MAIN_SERVICE_ENDPOINT }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_IP }}:8080
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
@@ -219,7 +220,7 @@ jobs:
           --endpoint http://${{ env.MAIN_SERVICE_ENDPOINT }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_IP }}:8080
           --region ${{ inputs.aws-region }}
-          --account-id ${{ env.ACCOUNT_ID }}
+          --account-id ${{ secrets.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
@@ -228,22 +229,22 @@ jobs:
           --instance-ami ${{ env.EC2_INSTANCE_AMI }}
           --rollup'
 
-      - name: Publish metric on test result
-        if: always()
-        run: |
-          if [ "${{ steps.log-validation.outcome }}" = "success" ] && [ "${{ steps.metric-validation.outcome }}" = "success" ] && [ "${{ steps.trace-validation.outcome }}" = "success" ]; then
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 0.0 \
-            --region ${{ inputs.aws-region }}
-          else
-            aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
-            --metric-name Failure \
-            --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
-            --value 1.0 \
-            --region ${{ inputs.aws-region }}
-          fi
+      # - name: Publish metric on test result
+      #   if: always()
+      #   run: |
+      #     if [ "${{ steps.log-validation.outcome }}" = "success" ] && [ "${{ steps.metric-validation.outcome }}" = "success" ] && [ "${{ steps.trace-validation.outcome }}" = "success" ]; then
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 0.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     else
+      #       aws cloudwatch put-metric-data --namespace 'ADOT/GitHubActions' \
+      #       --metric-name Failure \
+      #       --dimensions repository=${{ github.repository }},branch=${{ github.ref_name }},workflow=${{ inputs.caller-workflow-name }} \
+      #       --value 1.0 \
+      #       --region ${{ inputs.aws-region }}
+      #     fi
 
       # Clean up Procedures
       - name: Terraform destroy
