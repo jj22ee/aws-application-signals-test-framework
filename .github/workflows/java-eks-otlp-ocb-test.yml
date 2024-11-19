@@ -30,9 +30,9 @@ on:
         type: string
     outputs:
       job-started:
-        value: ${{ jobs.metric-limiter.outputs.job-started }}
+        value: ${{ jobs.java-eks-otlp-ocb.outputs.job-started }}
       validation-result:
-        value: ${{ jobs.metric-limiter.outputs.validation-result }}
+        value: ${{ jobs.java-eks-otlp-ocb.outputs.validation-result }}
 
 permissions:
   id-token: write
@@ -54,7 +54,7 @@ env:
   TEST_RESOURCES_FOLDER: ${GITHUB_WORKSPACE}
 
 jobs:
-  test:
+  java-eks-otlp-ocb:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -94,7 +94,7 @@ jobs:
         uses: ./.github/workflows/actions/execute_and_retry
         with:
           pre-command: "mkdir enablement-script && cd enablement-script"
-          command: "wget https://raw.githubusercontent.com/aws-observability/application-signals-demo/refs/heads/ocb/scripts/eks/appsignals/enable-app-signals-ocb.sh"
+          command: "wget https://raw.githubusercontent.com/jj22ee/application-signals-demo/refs/heads/ocb/scripts/eks/appsignals/enable-app-signals-ocb.sh"
           cleanup: "rm -f enable-app-signals-ocb.sh"
           post-command: "chmod +x enable-app-signals-ocb.sh"
 
@@ -202,7 +202,9 @@ jobs:
       - name: Install OTel Collector
         uses: ./.github/workflows/actions/execute_and_retry
         with:
-          command: "cd ${{ env.TEST_RESOURCES_FOLDER }}/terraform/java/eks-otlp-ocb/util && kubectl apply -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}"
+          command: "cd ${{ env.TEST_RESOURCES_FOLDER }}/terraform/java/eks-otlp-ocb/util && \
+            sed -i -e 's/${E2E_TEST_AWS_REGION}/${{ env.E2E_TEST_AWS_REGION }}/g' ./appsignals-collector.yaml && \
+            kubectl apply -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}"
           cleanup: "kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }} && \
             aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}"
           max_retry: 3
@@ -271,19 +273,17 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/log-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region ${{ env.E2E_TEST_AWS_REGION }}
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
-          --platform-info appsignals-ocb-demo
+          --platform-info ${{ env.CLUSTER_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_DEPLOYMENT_NAME }}
+          --remote-service-ip ${{ env.REMOTE_SERVICE_POD_IP }}
           --query-string ip=${{ env.REMOTE_SERVICE_POD_IP }}&testingId=${{ env.TESTING_ID }}
           --rollup'
-        # TODO: Undo hardcode
-        # --platform-info ${{ env.CLUSTER_NAME }}
-        # --region ${{ env.E2E_TEST_AWS_REGION }}
 
       - name: Call endpoints and validate generated metrics
         id: metric-validation
@@ -291,20 +291,18 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/metric-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region ${{ env.E2E_TEST_AWS_REGION }}
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
-          --platform-info appsignals-ocb-demo
+          --platform-info ${{ env.CLUSTER_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
           --remote-service-name sample-remote-application-${{ env.TESTING_ID }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_DEPLOYMENT_NAME }}
+          --remote-service-ip ${{ env.REMOTE_SERVICE_POD_IP }}
           --query-string ip=${{ env.REMOTE_SERVICE_POD_IP }}&testingId=${{ env.TESTING_ID }}
           --rollup'
-        # TODO: Undo hardcodes:
-        # --platform-info ${{ env.CLUSTER_NAME }}
-        # --region ${{ env.E2E_TEST_AWS_REGION }}
 
       - name: Call endpoints and validate generated traces
         id: trace-validation
@@ -312,19 +310,17 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/trace-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region ${{ env.E2E_TEST_AWS_REGION }}
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
           --app-namespace ${{ env.SAMPLE_APP_NAMESPACE }}
-          --platform-info appsignals-ocb-demo
+          --platform-info ${{ env.CLUSTER_NAME }}
           --service-name sample-application-${{ env.TESTING_ID }}
           --remote-service-deployment-name ${{ env.REMOTE_SERVICE_DEPLOYMENT_NAME }}
+          --remote-service-ip ${{ env.REMOTE_SERVICE_POD_IP }}
           --query-string ip=${{ env.REMOTE_SERVICE_POD_IP }}&testingId=${{ env.TESTING_ID }}
           --rollup'
-        # TODO: Undo hardcode
-        # --platform-info ${{ env.CLUSTER_NAME }}
-        # --region ${{ env.E2E_TEST_AWS_REGION }}
 
       - name: Refresh AWS Credentials
         if: ${{ github.event.repository.name == 'aws-application-signals-test-framework' }}
@@ -353,14 +349,11 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
           eksctl delete iamserviceaccount --name cloudwatch-agent --namespace amazon-cloudwatch --cluster ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
+          kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete ns opentelemetry-operator-system
-          kubectl delete service appsignals-collector -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete service appsignals-collector-headless -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete service appsignals-collector-monitoring -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete deploy --all -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete service sample-remote-app-service -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete service sample-app-service -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}
           aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
 
       - name: Terraform destroy

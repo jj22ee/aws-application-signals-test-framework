@@ -9,12 +9,12 @@
 name: Java EKS OTLP/OCB Enablement Canary Test
 on:
   # TODO: Reintroduce cron-job
-  # schedule:
-  #   - cron: '12,37 * * * *' # run the workflow at 12th and 37th minute of every hour
+  schedule:
+    - cron: '12,37 * * * *' # run the workflow at 12th and 37th minute of every hour
   workflow_dispatch: # be able to run the workflow on demand
-  push:
-    branches:
-      - otlp-ocb
+  # push:
+  #   branches:
+  #     - otlp-ocb
 
 permissions:
   id-token: write
