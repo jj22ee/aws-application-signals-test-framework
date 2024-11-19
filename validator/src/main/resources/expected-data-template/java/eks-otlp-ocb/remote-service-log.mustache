@@ -1,4 +1,5 @@
 [{
+  "EC2.AutoScalingGroup": "^eks-.+",
   "EC2.InstanceId": "^i-[A-Za-z0-9]{17}$",
   "EKS.Cluster": "^{{platformInfo}}$",
   "Environment": "^eks:{{platformInfo}}/{{appNamespace}}$",
@@ -14,6 +15,7 @@
   "Host": "^ip(-[0-9]{1,3}){4}.*$"
 },
 {
+  "EC2.AutoScalingGroup": "^eks-.+",
   "EC2.InstanceId": "^i-[A-Za-z0-9]{17}$",
   "EKS.Cluster": "^{{platformInfo}}$",
   "Environment": "^eks:{{platformInfo}}/{{appNamespace}}$",
