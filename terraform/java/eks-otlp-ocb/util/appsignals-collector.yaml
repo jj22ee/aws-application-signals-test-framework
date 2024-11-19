@@ -72,6 +72,74 @@ spec:
         resolvers:
           - platform: eks
             name: appsignals-ocb-demo
+      resourcedetection:
+        detectors:
+          - eks
+          - env
+          - ec2
+        ec2:
+          resource_attributes:
+            cloud.account.id:
+              enabled: true
+            cloud.availability_zone:
+              enabled: true
+            cloud.platform:
+              enabled: true
+            cloud.provider:
+              enabled: true
+            cloud.region:
+              enabled: true
+            host.id:
+              enabled: true
+            host.image.id:
+              enabled: true
+            host.name:
+              enabled: true
+            host.type:
+              enabled: true
+          tags:
+            - ^kubernetes.io/cluster/.*$
+            - ^aws:autoscaling:groupName
+        ecs:
+          resource_attributes:
+            aws.ecs.cluster.arn:
+              enabled: true
+            aws.ecs.launchtype:
+              enabled: true
+            aws.ecs.task.arn:
+              enabled: true
+            aws.ecs.task.family:
+              enabled: true
+            aws.ecs.task.id:
+              enabled: true
+            aws.ecs.task.revision:
+              enabled: true
+            aws.log.group.arns:
+              enabled: true
+            aws.log.group.names:
+              enabled: true
+            aws.log.stream.arns:
+              enabled: true
+            aws.log.stream.names:
+              enabled: true
+            cloud.account.id:
+              enabled: true
+            cloud.availability_zone:
+              enabled: true
+            cloud.platform:
+              enabled: true
+            cloud.provider:
+              enabled: true
+            cloud.region:
+              enabled: true
+        eks:
+          resource_attributes:
+            cloud.platform:
+              enabled: true
+            cloud.provider:
+              enabled: true
+            k8s.cluster.name:
+              enabled: true
       metricstransform/application_signals:
         transforms:
         - include: jvm.cpu.recent_utilization
@@ -437,7 +505,6 @@ spec:
     exporters:
       otlphttp:
         traces_endpoint: https://xray-beta.us-west-2.amazonaws.com/v1/traces
-        compression: zstd
         auth:
           authenticator: sigv4auth
       awsxray/application_signals:
@@ -479,9 +546,14 @@ spec:
               - Fault
               - Error
           - dimensions:
+              - [Environment, Service, Operation, RemoteService, RemoteOperation, RemoteEnvironment, RemoteResourceIdentifier, RemoteResourceType]
+              - [Environment, Service, Operation, RemoteService, RemoteOperation, RemoteEnvironment]
               - [Environment, Service, Operation, RemoteService, RemoteOperation, RemoteResourceIdentifier, RemoteResourceType]
               - [Environment, Service, Operation, RemoteService, RemoteOperation]
+              - [Environment, Service, RemoteService, RemoteEnvironment]
               - [Environment, Service, RemoteService]
+              - [Environment, Service, RemoteService, RemoteOperation, RemoteEnvironment, RemoteResourceIdentifier, RemoteResourceType]
+              - [Environment, Service, RemoteService, RemoteOperation, RemoteEnvironment]
               - [Environment, Service, RemoteService, RemoteOperation, RemoteResourceIdentifier, RemoteResourceType]
               - [Environment, Service, RemoteService, RemoteOperation]
               - [Environment, Service, RemoteService, RemoteResourceIdentifier, RemoteResourceType]
@@ -509,12 +581,13 @@ spec:
       pipelines:
         traces:
           receivers: [otlp/application_signals]
-          processors: [awsapplicationsignals]
+          processors: [resourcedetection, awsapplicationsignals]
           exporters: [awsxray/application_signals]
         metrics:
           receivers: [otlp/application_signals]
-          processors: 
+          processors:
           - metricstransform/application_signals
+          - resourcedetection
           - awsapplicationsignals
           exporters: [awsemf/application_signals]
         metrics/2:
