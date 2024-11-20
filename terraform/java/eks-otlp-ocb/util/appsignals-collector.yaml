@@ -50,7 +50,6 @@ spec:
   config: |
     extensions:
       awsproxy:
-      health_check:
       sigv4auth:
         region: "us-west-2"
         service: "xray"     
@@ -507,18 +506,6 @@ spec:
         traces_endpoint: https://xray-beta.us-west-2.amazonaws.com/v1/traces
         auth:
           authenticator: sigv4auth
-      awsxray/application_signals:
-        region: 'us-west-2'
-        index_all_attributes: false
-        indexed_attributes:
-          - aws.local.service
-          - aws.local.operation
-          - aws.local.environment
-          - aws.remote.service
-          - aws.remote.operation
-          - aws.remote.environment
-          - aws.remote.resource.identifier
-          - aws.remote.resource.type
 
       awsemf:
         region: 'us-west-2'
@@ -582,7 +569,7 @@ spec:
         traces:
           receivers: [otlp/application_signals]
           processors: [resourcedetection, awsapplicationsignals]
-          exporters: [awsxray/application_signals]
+          exporters: [otlphttp]
         metrics:
           receivers: [otlp/application_signals]
           processors:
