@@ -94,7 +94,7 @@ jobs:
         uses: ./.github/workflows/actions/execute_and_retry
         with:
           pre-command: "mkdir enablement-script && cd enablement-script"
-          command: "wget https://raw.githubusercontent.com/aws-observability/application-signals-demo/refs/heads/ocb/scripts/eks/appsignals/enable-app-signals-ocb.sh"
+          command: "wget https://raw.githubusercontent.com/jj22ee/application-signals-demo/refs/heads/ocb/scripts/eks/appsignals/enable-app-signals-ocb.sh"
           cleanup: "rm -f enable-app-signals-ocb.sh"
           post-command: "chmod +x enable-app-signals-ocb.sh"
 
