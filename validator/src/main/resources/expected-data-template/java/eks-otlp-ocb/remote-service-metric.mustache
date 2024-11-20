@@ -10,7 +10,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Latency
@@ -24,7 +24,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -38,7 +38,7 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: Operation
       value: GET /healthcheck
@@ -55,7 +55,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Latency
@@ -66,7 +66,7 @@
       value: {{remoteServiceDeploymentName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Latency
@@ -77,7 +77,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: {{remoteServiceDeploymentName}}
@@ -91,7 +91,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -113,10 +113,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: {{remoteServiceDeploymentName}}
@@ -130,10 +130,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -150,179 +150,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: Operation
-      value: GET /remote-service
-    -
-      name: RemoteOperation
-      value: GET /healthcheck
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-    -
-      name: Service
-      value: {{serviceName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Operation
-      value: GET /remote-service
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Operation
-      value: GET /remote-service
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteOperation
-      value: GET /healthcheck
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: Operation
-      value: GET /healthcheck
-    -
-      name: Service
-      value: {{remoteServiceDeploymentName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{remoteServiceDeploymentName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteOperation
-      value: GET /healthcheck
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-    -
-      name: Service
-      value: {{serviceName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteOperation
-      value: GET /healthcheck
-    -
-      name: RemoteService
-      value: {{remoteServiceDeploymentName}}
-    -
-      name: Service
-      value: {{serviceName}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-    -
-      name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: Operation
       value: GET /remote-service
@@ -337,6 +168,175 @@
       value: {{serviceName}}
 
 -
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Operation
+      value: GET /remote-service
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Environment
+      value: generic:default
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Operation
+      value: GET /remote-service
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteOperation
+      value: GET /healthcheck
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: Operation
+      value: GET /healthcheck
+    -
+      name: Service
+      value: {{remoteServiceDeploymentName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Environment
+      value: generic:default
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{remoteServiceDeploymentName}}
+    -
+      name: Environment
+      value: generic:default
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteOperation
+      value: GET /healthcheck
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteEnvironment
+      value: generic:default
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+    -
+      name: Service
+      value: {{serviceName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteEnvironment
+      value: generic:default
+    -
+      name: RemoteOperation
+      value: GET /healthcheck
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+    -
+      name: Service
+      value: {{serviceName}}
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Environment
+      value: generic:default
+    -
+      name: RemoteEnvironment
+      value: generic:default
+    -
+      name: Operation
+      value: GET /remote-service
+    -
+      name: RemoteOperation
+      value: GET /healthcheck
+    -
+      name: RemoteService
+      value: {{remoteServiceDeploymentName}}
+    -
+      name: Service
+      value: {{serviceName}}
+
+-
   metricName: Fault
   namespace: {{metricNamespace}}
   dimensions:
@@ -348,7 +348,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Fault
@@ -362,7 +362,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -376,7 +376,7 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: Operation
       value: GET /healthcheck
@@ -393,7 +393,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Fault
@@ -404,7 +404,7 @@
       value: {{remoteServiceDeploymentName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Fault
@@ -415,7 +415,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: {{remoteServiceDeploymentName}}
@@ -429,7 +429,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -451,10 +451,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: {{remoteServiceDeploymentName}}
@@ -468,10 +468,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteOperation
       value: GET /healthcheck
@@ -488,10 +488,10 @@
   dimensions:
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteEnvironment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: Operation
       value: GET /remote-service

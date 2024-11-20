@@ -10,7 +10,7 @@
       value: GET /client-call
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Latency
@@ -21,21 +21,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Latency
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Latency
@@ -49,7 +35,21 @@
       value: InternalOperation
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
+
+-
+  metricName: Latency
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Operation
+      value: InternalOperation
+    -
+      name: Environment
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -66,7 +66,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -83,7 +83,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -100,7 +100,7 @@
       value: GET /client-call
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Error
@@ -111,21 +111,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Error
@@ -139,7 +125,21 @@
       value: InternalOperation
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
+
+-
+  metricName: Error
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Operation
+      value: InternalOperation
+    -
+      name: Environment
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -156,7 +156,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -173,7 +173,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -190,7 +190,7 @@
       value: GET /client-call
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Fault
@@ -201,21 +201,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
-
--
-  metricName: Fault
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
-    -
-      name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
 
 -
   metricName: Fault
@@ -229,7 +215,21 @@
       value: InternalOperation
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
+
+-
+  metricName: Fault
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: Service
+      value: {{serviceName}}
+    -
+      name: Operation
+      value: InternalOperation
+    -
+      name: Environment
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -246,7 +246,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -263,7 +263,7 @@
       value: {{serviceName}}
     -
       name: Environment
-      value: eks:{{platformInfo}}/{{appNamespace}}
+      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
