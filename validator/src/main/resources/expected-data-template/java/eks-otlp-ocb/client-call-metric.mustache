@@ -36,20 +36,6 @@
     -
       name: Environment
       value: generic:default
-
--
-  metricName: Latency
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
-    -
-      name: Environment
-      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -126,20 +112,6 @@
     -
       name: Environment
       value: generic:default
-
--
-  metricName: Error
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
-    -
-      name: Environment
-      value: generic:default
     -
       name: RemoteService
       value: local-root-client-call
@@ -199,20 +171,6 @@
     -
       name: Service
       value: {{serviceName}}
-    -
-      name: Environment
-      value: generic:default
-
--
-  metricName: Fault
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: Service
-      value: {{serviceName}}
-    -
-      name: Operation
-      value: InternalOperation
     -
       name: Environment
       value: generic:default
