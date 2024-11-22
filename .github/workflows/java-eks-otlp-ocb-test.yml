@@ -30,9 +30,9 @@ on:
         type: string
     outputs:
       job-started:
-        value: ${{ jobs.metric-limiter.outputs.job-started }}
+        value: ${{ jobs.java-eks-otlp-ocb.outputs.job-started }}
       validation-result:
-        value: ${{ jobs.metric-limiter.outputs.validation-result }}
+        value: ${{ jobs.java-eks-otlp-ocb.outputs.validation-result }}
 
 permissions:
   id-token: write
@@ -54,7 +54,7 @@ env:
   TEST_RESOURCES_FOLDER: ${GITHUB_WORKSPACE}
 
 jobs:
-  test:
+  java-eks-otlp-ocb:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -353,14 +353,11 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
           eksctl delete iamserviceaccount --name cloudwatch-agent --namespace amazon-cloudwatch --cluster ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
+          kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete ns opentelemetry-operator-system
-          kubectl delete service appsignals-collector -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete service appsignals-collector-headless -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete service appsignals-collector-monitoring -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete deploy --all -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete service sample-remote-app-service -n ${{ env.SAMPLE_APP_NAMESPACE }}
           kubectl delete service sample-app-service -n ${{ env.SAMPLE_APP_NAMESPACE }}
-          kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}
           aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}
 
       - name: Terraform destroy
