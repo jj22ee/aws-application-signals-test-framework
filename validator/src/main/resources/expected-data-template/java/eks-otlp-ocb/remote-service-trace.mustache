@@ -18,12 +18,10 @@
     "aws.local.environment": "^generic:default$"
   },
   "metadata": {
-    "default": {
       "EC2.AutoScalingGroup": "^eks-.+",
       "EKS.Cluster": "^{{platformInfo}}$",
       "K8s.Namespace": "^{{appNamespace}}",
       "PlatformType": "^Generic$"
-    }
   },
   "subsegments": [
     {
@@ -45,12 +43,10 @@
             "aws.remote.environment": "^generic:default$"
           },
           "metadata": {
-            "default": {
               "EC2.AutoScalingGroup": "^eks-.+",
               "EKS.Cluster": "^{{platformInfo}}$",
               "K8s.Namespace": "^{{appNamespace}}$",
-              "PlatformType": "^Generic$",
-            }
+              "PlatformType": "^Generic$"
            },
           "namespace": "^remote$"
         }
@@ -72,8 +68,12 @@
     "aws.local.environment": "^generic:default$"
   },
   "metadata": {
-    "default": {
-    }
+      "EC2.AutoScalingGroup": "^eks-.+",
+      "EKS.Cluster": "^{{platformInfo}}$",
+      "K8s.Namespace": "^{{appNamespace}}",
+      "PlatformType": "^Generic$",
+      "K8s.Workload": "^{{remoteServiceDeploymentName}}$",
+      "K8s.Pod": "^{{remoteServiceDeploymentName}}(-[A-Za-z0-9]*)*$"
   },
   "subsegments": [
     {

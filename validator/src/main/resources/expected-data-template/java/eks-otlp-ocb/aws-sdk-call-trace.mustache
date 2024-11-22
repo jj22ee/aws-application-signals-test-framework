@@ -18,12 +18,10 @@
     "aws.local.environment": "^generic:default$"
   },
   "metadata": {
-    "default": {
       "EC2.AutoScalingGroup": "^eks-.+",
       "EKS.Cluster": "^{{platformInfo}}$",
       "K8s.Namespace": "^{{appNamespace}}",
       "PlatformType": "^Generic$"
-    }
   },
   "subsegments": [
     {
@@ -46,12 +44,10 @@
             "aws.local.environment": "^generic:default$"
           },
           "metadata": {
-            "default": {
               "EC2.AutoScalingGroup": "^eks-.+",
               "EKS.Cluster": "^{{platformInfo}}$",
               "K8s.Namespace": "^{{appNamespace}}$",
-              "PlatformType": "^Generic$",
-            }
+              "PlatformType": "^Generic$"
           },
           "namespace": "^aws$"
         }
