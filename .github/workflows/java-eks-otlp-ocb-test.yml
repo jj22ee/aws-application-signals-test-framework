@@ -271,7 +271,7 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/log-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region us-east-1
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
@@ -292,7 +292,7 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/metric-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region us-east-1
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}
@@ -314,7 +314,7 @@ jobs:
         run: ./gradlew validator:run --args='-c java/eks-otlp-ocb/trace-validation.yml
           --testing-id ${{ env.TESTING_ID }}
           --endpoint http://${{ env.APP_ENDPOINT }}
-          --region us-west-2
+          --region us-east-1
           --account-id ${{ env.ACCOUNT_ID }}
           --metric-namespace ${{ env.METRIC_NAMESPACE }}
           --log-group ${{ env.LOG_GROUP_NAME }}

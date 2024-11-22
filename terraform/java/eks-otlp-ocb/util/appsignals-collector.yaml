@@ -50,7 +50,7 @@ spec:
   config: |
     extensions:
       sigv4auth:
-        region: "us-west-2"
+        region: "us-east-1"
         service: "xray"     
 
     receivers:
@@ -137,7 +137,7 @@ spec:
 
     exporters:
       otlphttp:
-        traces_endpoint: https://xray.us-west-2.amazonaws.com/v1/traces
+        traces_endpoint: https://xray.us-east-1.amazonaws.com/v1/traces
         auth:
           authenticator: sigv4auth
 
