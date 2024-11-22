@@ -6,10 +6,7 @@
     "aws.local.environment": "^generic:default$"
   },
   "metadata": {
-      "EC2.AutoScalingGroup": "^eks-.+",
-      "EKS.Cluster": "^{{platformInfo}}$",
-      "K8s.Namespace": "^{{appNamespace}}",
-      "PlatformType": "^Generic$"
+    "k8s.cluster.name": "^{{platformInfo}}$"
   },
   "subsegments": [
     {
@@ -28,11 +25,10 @@
         "aws.local.environment": "^generic:default$"
       },
       "metadata": {
-          "EC2.AutoScalingGroup": "^eks-.+",
-          "EKS.Cluster": "^{{platformInfo}}$",
-          "K8s.Namespace": "^{{appNamespace}}$",
-          "PlatformType": "^Generic$",
-          "aws.span.kind": "^LOCAL_ROOT$"
+        "EC2.AutoScalingGroup": "^eks-.+",
+        "EKS.Cluster": "^{{platformInfo}}$",
+        "K8s.Namespace": "^{{appNamespace}}$",
+        "PlatformType": "^Generic$"
       },
       "namespace": "^remote$"
     }
@@ -44,9 +40,6 @@
     "request": {
       "url": "^http://local-root-client-call$",
       "method": "^GET$"
-    },
-    "response": {
-        "content_length": 0
     }
   },
   "annotations": {

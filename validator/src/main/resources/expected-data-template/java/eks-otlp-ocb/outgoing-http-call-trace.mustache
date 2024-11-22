@@ -2,15 +2,11 @@
   "name": "^{{serviceName}}$",
   "http": {
     "request": {
-      "url": "^{{endpoint}}/outgoing-http-call$",
       "method": "^GET$"
     },
     "response": {
       "status": "^200$"
     }
-  },
-  "aws": {
-    "account_id": "^{{accountId}}$"
   },
   "annotations": {
     "aws.local.service": "^{{serviceName}}$",
@@ -18,10 +14,10 @@
     "aws.local.environment": "^generic:default$"
   },
   "metadata": {
-      "EC2.AutoScalingGroup": "^eks-.+",
-      "EKS.Cluster": "^{{platformInfo}}$",
-      "K8s.Namespace": "^{{appNamespace}}",
-      "PlatformType": "^Generic$"
+    "EC2.AutoScalingGroup": "^eks-.+",
+    "EKS.Cluster": "^{{platformInfo}}$",
+    "K8s.Namespace": "^{{appNamespace}}",
+    "PlatformType": "^Generic$"
   },
   "subsegments": [
     {
@@ -36,16 +32,16 @@
           },
           "annotations": {
             "aws.local.service": "^{{serviceName}}$",
-            "aws.local.operation": "^GET /outgoing-http-call$",
+            "aws.local.operation": "^UnmappedOperation$",
             "aws.remote.service": "^www.amazon.com$",
             "aws.remote.operation": "^GET /$",
             "aws.local.environment": "^generic:default$"
           },
           "metadata": {
-              "EC2.AutoScalingGroup": "^eks-.+",
-              "EKS.Cluster": "^{{platformInfo}}$",
-              "K8s.Namespace": "^{{appNamespace}}$",
-              "PlatformType": "^Generic$"
+            "EC2.AutoScalingGroup": "^eks-.+",
+            "EKS.Cluster": "^{{platformInfo}}$",
+            "K8s.Namespace": "^{{appNamespace}}$",
+            "PlatformType": "^Generic$"
           },
           "namespace": "^remote$"
         }
