@@ -28,6 +28,10 @@ on:
       cw-agent-operator-tag:
         required: false
         type: string
+      e2e-otel-collector-image:
+        required: false
+        type: string
+        default: 'public.ecr.aws/n7z4r8f9/otel-col-appsignals:fix-cluster2'
     outputs:
       job-started:
         value: ${{ jobs.java-eks-otlp-ocb.outputs.job-started }}
@@ -52,6 +56,7 @@ env:
   METRIC_NAMESPACE: ApplicationSignals
   LOG_GROUP_NAME: /aws/application-signals/data
   TEST_RESOURCES_FOLDER: ${GITHUB_WORKSPACE}
+  E2E_OTEL_COLLECTOR_IMAGE: ${{ inputs.e2e-otel-collector-image }}
 
 jobs:
   java-eks-otlp-ocb:
@@ -196,6 +201,7 @@ jobs:
           command: "cd ${{ env.TEST_RESOURCES_FOLDER }}/terraform/java/eks-otlp-ocb/util && \
             sed -i -e 's/${E2E_TEST_AWS_REGION}/${{ env.E2E_TEST_AWS_REGION }}/g' ./appsignals-collector.yaml && \
             sed -i -e 's/${SAMPLE_APP_NAMESPACE}/${{ env.SAMPLE_APP_NAMESPACE }}/g' ./appsignals-collector.yaml && \
+            sed -i -e 's/${E2E_OTEL_COLLECTOR_IMAGE}/${{ env.E2E_OTEL_COLLECTOR_IMAGE }}/g' ./appsignals-collector.yaml && \
             kubectl apply -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }}"
           cleanup: "kubectl delete -f ./appsignals-collector.yaml -n ${{ env.SAMPLE_APP_NAMESPACE }} && \
             aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.E2E_TEST_AWS_REGION }}"
