@@ -1,0 +1,137 @@
+name: Validate E2E Tests Are Accounted For
+on:
+  workflow_call:
+
+env:
+  TEST_RESOURCES_FOLDER: ${GITHUB_WORKSPACE}
+
+jobs:
+  validate-e2e-tests-are-accounted-for:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1.221.0
+        with:
+          ruby-version: "3.4"
+      - name: Determine TESTS_USED and TESTS_AVAILABLE for Java
+        if: contains(github.repository, 'aws-otel-java-instrumentation')
+        run: |
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
+          cd aws-application-signals-test-framework/.github/workflows/
+
+          # Count all tests YAML files that should be used by ADOT Java that are not lambda-layer performance tests (which are manually run).
+          echo "TESTS_USED=$(ls | grep -E '^java-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-java-instrumentation.git
+          cd aws-otel-java-instrumentation/.github/workflows/
+
+          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
+              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
+
+      - name: Determine TESTS_USED and TESTS_AVAILABLE for JavaScript
+        if: contains(github.repository, 'aws-otel-js-instrumentation')
+        run: |
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
+          cd aws-application-signals-test-framework/.github/workflows/
+
+          # Count all tests YAML files that should be used by ADOT JavaScript that are not lambda-layer performance tests (which are manually run).
+          echo "TESTS_USED=$(ls | grep -E '^node-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-js-instrumentation.git
+          cd aws-otel-js-instrumentation/.github/workflows/
+
+          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
+              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
+
+      - name: Determine TESTS_USED and TESTS_AVAILABLE for Python
+        if: contains(github.repository, 'aws-otel-python-instrumentation')
+        run: |
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
+          cd aws-application-signals-test-framework/.github/workflows/
+
+          # Count all tests YAML files that should be used by ADOT Python that are not lambda-layer performance tests (which are manually run).
+          echo "TESTS_USED=$(ls | grep -E '^python-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-python-instrumentation.git
+          cd aws-otel-python-instrumentation/.github/workflows/
+
+          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
+              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
+
+      - name: Determine TESTS_USED and TESTS_AVAILABLE for .NET
+        if: contains(github.repository, 'aws-otel-dotnet-instrumentation')
+        run: |
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
+          cd aws-application-signals-test-framework/.github/workflows/
+
+          # Count all tests YAML files that should be used by ADOT .NET that are not lambda-layer performance tests (which are manually run).
+          echo "TESTS_USED=$(ls | grep -E '^dotnet-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-dotnet-instrumentation.git
+          cd aws-otel-dotnet-instrumentation/.github/workflows/
+
+          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
+              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
+
+      - name: Determine TESTS_USED and TESTS_AVAILABLE for CloudWatch Agent
+        if: contains(github.repository, 'amazon-cloudwatch-agent')
+        run: |
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
+          cd aws-application-signals-test-framework/.github/workflows/
+
+          # Count all tests YAML files that should be used by CloudWatch Agent.
+          # Any related tests to the following are excluded:
+          # - sigv4, lambda-test, lambda-layer-perf-test, ocb, genesis
+          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^node-)|(^python-)|(^dotnet-)|(^metric-limiter-)' | grep -Ev '(sigv4|lambda-test|lambda-layer-perf-test|ocb|genesis)' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+
+          cd ${{ env.TEST_RESOURCES_FOLDER }}
+          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/amazon-cloudwatch-agent.git
+          cd amazon-cloudwatch-agent/.github/workflows/
+
+          # Count all the test framework tests that are actually used in all application-signals-e2e-test-part*.yml files.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'total = 0; \
+              Dir.glob("application-signals-e2e-test-part*.yml").each do |file| \
+                total += YAML.load_file(file)["jobs"].values \
+                  .map { |v| v["uses"] } \
+                  .compact \
+                  .uniq \
+                  .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") } \
+              end; \
+              puts total') >> $GITHUB_ENV
+
+      - name: Compare TESTS_USED and TESTS_AVAILABLE
+        run: |
+          echo ${{ env.TESTS_USED }}
+          echo ${{ env.TESTS_AVAILABLE }}
+          if [[ -z "${{ env.TESTS_USED }}" || -z "${{ env.TESTS_AVAILABLE }}" || "${{ env.TESTS_USED }}" != "${{ env.TESTS_AVAILABLE }}" ]]; then
+            exit 1
+          fi
