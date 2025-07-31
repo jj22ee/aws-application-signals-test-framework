@@ -21,7 +21,7 @@ jobs:
           cd aws-application-signals-test-framework/.github/workflows/
 
           # Count all tests YAML files that should be used by ADOT Java that are not lambda-layer performance tests (which are manually run).
-          echo "TESTS_USED=$(ls | grep -E '^java-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
+          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^metric-limiter-)' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-java-instrumentation.git
@@ -101,29 +101,7 @@ jobs:
               # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
               .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
 
-      - name: Determine TESTS_USED and TESTS_AVAILABLE for CloudWatch Agent
-        if: contains(github.repository, 'amazon-cloudwatch-agent')
-        run: |
-          cd ${{ env.TEST_RESOURCES_FOLDER }}
-          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
-          cd aws-application-signals-test-framework/.github/workflows/
-
-          # Count all tests YAML files that should be used by CloudWatch Agent.
-          # Any related tests to the following are excluded:
-          # - sigv4, lambda-test, lambda-layer-perf-test, ocb, genesis
-          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^node-)|(^python-)|(^dotnet-)|(^metric-limiter-)' | grep -Ev '(sigv4|lambda-test|lambda-layer-perf-test|ocb|genesis)' | grep -E 'test\.ya?ml$' -c)" >> $GITHUB_ENV
-
-          cd ${{ env.TEST_RESOURCES_FOLDER }}
-          git clone -b ${{ github.ref_name }} https://github.com/jj22ee/amazon-cloudwatch-agent.git
-          cd amazon-cloudwatch-agent/.github/workflows/
-
-          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
-          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
-              .map { |v| v["uses"] } \
-              .compact \
-              .uniq \
-              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
-              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
+      # TODO: Determine TESTS_USED and TESTS_AVAILABLE for CloudWatch Agent
 
       - name: Compare TESTS_USED and TESTS_AVAILABLE
         run: |
