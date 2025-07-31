@@ -123,16 +123,15 @@ jobs:
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/amazon-cloudwatch-agent.git
           cd amazon-cloudwatch-agent/.github/workflows/
 
-          # Get all test framework workflows actually used in all application-signals-e2e-test-part*.yml files
-          echo "TESTS_AVAILABLE=$(ruby -ryaml -e 'workflows = []; \
-              Dir.glob("application-signals-e2e-test-part*.yml").each do |file| \
-                workflows += YAML.load_file(file)["jobs"].values \
-                  .map { |v| v["uses"] } \
-                  .compact \
-                  .select { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") } \
-                  .map { |u| u.split("/").last.split("@").first } \
-              end; \
-              puts workflows.uniq.sort.join(" ")')" >> $GITHUB_ENV
+          # Get all test framework workflows actually used in application-signals-e2e-test.yml
+          echo "TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              .select { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") } \
+              .map { |u| u.split("/").last.split("@").first } \
+              .sort \
+              .join(" ")')" >> $GITHUB_ENV
 
       - name: Compare TESTS_USED and TESTS_AVAILABLE
         run: |
