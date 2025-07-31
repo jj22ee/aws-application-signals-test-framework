@@ -117,16 +117,13 @@ jobs:
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/amazon-cloudwatch-agent.git
           cd amazon-cloudwatch-agent/.github/workflows/
 
-          # Count all the test framework tests that are actually used in all application-signals-e2e-test-part*.yml files.
-          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'total = 0; \
-              Dir.glob("application-signals-e2e-test-part*.yml").each do |file| \
-                total += YAML.load_file(file)["jobs"].values \
-                  .map { |v| v["uses"] } \
-                  .compact \
-                  .uniq \
-                  .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") } \
-              end; \
-              puts total') >> $GITHUB_ENV
+          # Count all the test framework tests that are actually used in `application-signals-e2e-test.yml`.
+          echo TESTS_AVAILABLE=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
+              .map { |v| v["uses"] } \
+              .compact \
+              .uniq \
+              # Exclude counting the validation job that invokes this workflow file, because it is not an e2e test \
+              .count { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }') >> $GITHUB_ENV
 
       - name: Compare TESTS_USED and TESTS_AVAILABLE
         run: |
