@@ -1,6 +1,12 @@
 name: Validate E2E Tests Are Accounted For
 on:
   workflow_call:
+    inputs:
+      exclusions:
+        description: 'Comma-separated list of test files to exclude from validation'
+        type: string
+        required: false
+        default: ''
 
 env:
   TEST_RESOURCES_FOLDER: ${GITHUB_WORKSPACE}
@@ -20,8 +26,10 @@ jobs:
           git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
           cd aws-application-signals-test-framework/.github/workflows/
 
-          # Get all test workflow files that should be used by ADOT Java
-          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^metric-limiter-)' | grep -Ev '(lambda-layer-perf-test|otlp-ocb)' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          # Get all test workflow files that should be used by ADOT Java, applying exclusions
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions: $EXCLUSIONS"
+          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^metric-limiter-)' | grep -Ev '(lambda-layer-perf-test|otlp-ocb)' | grep -E 'test\.ya?ml$' | { [[ -n "$EXCLUSIONS" ]] && grep -v -F -f <(echo "$EXCLUSIONS" | tr ',' '\n') || cat; } | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-java-instrumentation.git
@@ -44,8 +52,10 @@ jobs:
           git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
           cd aws-application-signals-test-framework/.github/workflows/
 
-          # Get all test workflow files that should be used by ADOT JavaScript
-          echo "TESTS_USED=$(ls | grep -E '^node-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          # Get all test workflow files that should be used by ADOT JavaScript, applying exclusions
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions: $EXCLUSIONS"
+          echo "TESTS_USED=$(ls | grep -E '^node-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | { [[ -n "$EXCLUSIONS" ]] && grep -v -F -f <(echo "$EXCLUSIONS" | tr ',' '\n') || cat; } | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-js-instrumentation.git
@@ -68,8 +78,10 @@ jobs:
           git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
           cd aws-application-signals-test-framework/.github/workflows/
 
-          # Get all test workflow files that should be used by ADOT Python
-          echo "TESTS_USED=$(ls | grep -E '^python-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          # Get all test workflow files that should be used by ADOT Python, applying exclusions
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions: $EXCLUSIONS"
+          echo "TESTS_USED=$(ls | grep -E '^python-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | { [[ -n "$EXCLUSIONS" ]] && grep -v -F -f <(echo "$EXCLUSIONS" | tr ',' '\n') || cat; } | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-python-instrumentation.git
@@ -92,8 +104,10 @@ jobs:
           git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
           cd aws-application-signals-test-framework/.github/workflows/
 
-          # Get all test workflow files that should be used by ADOT .NET
-          echo "TESTS_USED=$(ls | grep -E '^dotnet-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          # Get all test workflow files that should be used by ADOT .NET, applying exclusions
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions: $EXCLUSIONS"
+          echo "TESTS_USED=$(ls | grep -E '^dotnet-' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | { [[ -n "$EXCLUSIONS" ]] && grep -v -F -f <(echo "$EXCLUSIONS" | tr ',' '\n') || cat; } | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-dotnet-instrumentation.git
@@ -116,8 +130,10 @@ jobs:
           git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
           cd aws-application-signals-test-framework/.github/workflows/
 
-          # Get all test workflow files that should be used by CloudWatch Agent
-          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^node-)|(^python-)|(^dotnet-)|(^metric-limiter-)' | grep -Ev '(sigv4|lambda-test|lambda-layer-perf-test|ocb|genesis)' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          # Get all test workflow files that should be used by CloudWatch Agent, applying exclusions
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions: $EXCLUSIONS"
+          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^node-)|(^python-)|(^dotnet-)|(^metric-limiter-)' | grep -Ev '(sigv4|lambda-test|lambda-layer-perf-test|ocb|genesis)' | grep -E 'test\.ya?ml$' | { [[ -n "$EXCLUSIONS" ]] && grep -v -F -f <(echo "$EXCLUSIONS" | tr ',' '\n') || cat; } | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/amazon-cloudwatch-agent.git
