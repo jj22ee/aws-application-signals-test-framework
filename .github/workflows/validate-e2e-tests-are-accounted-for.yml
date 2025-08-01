@@ -86,15 +86,21 @@ jobs:
           git clone -b ${{ github.ref_name }} https://github.com/${{ github.repository }}.git ${{ github.repository }}
           cd ${{ github.repository }}/.github/workflows/
 
-          # Get all test framework workflows actually used in application-signals-e2e-test.yml
-          echo "TESTS_ACTUALLY_USED=$(ruby -ryaml -e 'puts YAML.load_file("application-signals-e2e-test.yml")["jobs"].values \
-              .map { |v| v["uses"] } \
-              .compact \
-              .uniq \
-              .select { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") } \
-              .map { |u| u.split("/").last.split("@").first } \
-              .sort \
-              .join(" ")')" >> $GITHUB_ENV
+          # Get all test framework workflows actually used in application-signals-e2e-test.yml, with exclusions applied
+          EXCLUSIONS="${{ inputs.exclusions }}"
+          [[ -n "$EXCLUSIONS" ]] && echo "Applying exclusions to TESTS_ACTUALLY_USED: $EXCLUSIONS"
+          echo "TESTS_ACTUALLY_USED=$(ruby -ryaml -e '
+            exclusions = "${{ inputs.exclusions }}".split(",").map(&:strip).reject(&:empty?)
+            workflows = YAML.load_file("application-signals-e2e-test.yml")["jobs"].values
+              .map { |v| v["uses"] }
+              .compact
+              .uniq
+              .select { |u| u.include?("aws-application-signals-test-framework/.github/workflows") && !u.include?("validate-e2e-tests-are-accounted-for") }
+              .map { |u| u.split("/").last.split("@").first }
+              .reject { |w| exclusions.include?(w) }
+              .sort
+            puts workflows.join(" ")
+          ')" >> $GITHUB_ENV
 
       - name: Compare TESTS_ACTUALLY_USED and TESTS_EXPECTED
         run: |
