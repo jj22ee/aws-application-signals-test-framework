@@ -21,7 +21,7 @@ jobs:
           cd aws-application-signals-test-framework/.github/workflows/
 
           # Get all test workflow files that should be used by ADOT Java
-          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^metric-limiter-)' | grep -v 'lambda-layer-perf-test' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          echo "TESTS_USED=$(ls | grep -E '(^java-)|(^metric-limiter-)' | grep -Ev '(lambda-layer-perf-test|otlp-ocb)' | grep -E 'test\.ya?ml$' | sort | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
 
           cd ${{ env.TEST_RESOURCES_FOLDER }}
           git clone -b ${{ github.ref_name }} https://github.com/jj22ee/aws-otel-java-instrumentation.git
