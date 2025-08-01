@@ -24,7 +24,7 @@ jobs:
       - name: Checkout aws-application-signals-test-framework
         run: |
           cd ${{ env.TEST_RESOURCES_FOLDER }}
-          git clone https://github.com/aws-observability/aws-application-signals-test-framework.git
+          git clone https://github.com/jj22ee/aws-application-signals-test-framework.git
 
       - name: Determine workflow files expected to be used by ADOT Java
         if: contains(github.repository, 'aws-otel-java-instrumentation')
